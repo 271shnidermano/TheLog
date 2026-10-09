@@ -7,7 +7,7 @@
  * @version 
  */
 @SuppressWarnings("unchecked")  // eliminates compiler warnings from cast below
-/*
+
 public class ArrayLog<T> implements EnhancedLogInterface<T>
 {
     // Instance variables
@@ -41,55 +41,68 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
     // Returns true if this list contains no elements.
     public boolean isEmpty()
     {
-        for(int i = 0; i<this.log.length(); i++)
-        {
-            if(log[i] != null)
+        
+            if(size==0)
+            {
+                return true;
+            }
+            else
             {
                 return false;
             }
-        }
-        return true;
     }
     
     // Returns true if this list is completely full.
     public boolean isFull()
     {
-         for(int i = 0; i<this.log.length(); i++)
+        if(size==this.log.length)
         {
-            if(log[i] == null)
-            {
-                return false;
-            }
+            return true;
         }
-        return true;
+        else
+        {
+            return false;
+        }
+        
+        
     }
 
     // Appends the specified element to the end of this list.
     public void add(T element)
     {
-        if(this.log.isFull())
+        if (size==this.log.length)
         {
-            
+            doubleLength();
         }
+        this.log[size]=element;
+        this.size++;
+        
     }
   
     // Returns the element at the specified position in this list.
     public T get(int index)
     {   
-        return null;
+        return this.log[index];
     }
     
     // Returns the index of the first occurance of the specified element
     // in this list, or -1 if this list does not contain the element.
     public int indexOf(T element)
     {
+       for (int i = 0; i < size; i++)
+        {
+            if (log[i].equals(element))
+            {
+                return i;
+            }
+        }
         return -1;
     }
     
     // Returns true if this list contains the specified element.
     public boolean contains(T element)
     {
-        return false;
+        return indexOf(element) != -1;
     }
     
     // Returns a formatted string representation of this StringLog.
@@ -107,32 +120,34 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
     // with the specified element.  Returns what was at that location
     public T set(int index, T element)
     {
-        return null;
+        T old = this.log[index];
+        this.log[index] = element;
+        return old;
     }
     
     // Inserts the specified element at the specified position in this list.
     public void add(int index, T element)
     {
-        if(isFull())
+        if (index < 0 || index > size)
         {
-            doubleLength()
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
-        T[] tempArray = new (T[]) Object[size+1];
-        for(int i= 0; i<index; i++)
+        if (size == this.log.length)
         {
-            tempArray[i]=this.log[i]
+            doubleLength();
         }
-        tempArray[index]=element;
-        for(int j = 0; j<size-index; j++)
+        T[] tempArray = (T[]) new Object[this.log.length];
+        for (int i = 0; i < size; i++)
         {
-            tempArray[index+j+1] = this.log[index+j];
+            tempArray[i] = this.log[i];
         }
+        for (int i = size; i > index; i--)
+        {
+            tempArray[i] = tempArray[i - 1];
+        }
+        tempArray[index] = element;
+        this.log = tempArray;
         this.size++;
-        for(int l = 0; l<size; l++)
-        {
-            this.log[l]= tempArray[l];
-        }
-
     }
     
     // Removes the element at the specified position in this list, and
@@ -140,7 +155,34 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
     // are set to null.
     public T remove(int index)
     {
-        return null;
+        if (index < 0 || index >= size)
+        {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        T old = this.log[index];
+        T[] tempArray = (T[]) new Object[this.log.length];
+        int newIndex = 0;
+        for (int i = 0; i < size; i++)
+        {
+            if (i != index)
+            {
+                tempArray[newIndex] = this.log[i];
+                newIndex++;
+            }
+        }
+        this.log = tempArray;
+        this.size--;
+        for (int i = this.size; i < this.log.length; i++)
+        {
+            this.log[i] = null;
+        }
+        int quarterOfMemory = (this.log.length) / 4;
+        if (size < quarterOfMemory)
+        {
+            halfLength();
+        }
+        return old; 
+     
     }
     
     // Removes the first occurance of the specified element from this
@@ -148,19 +190,30 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
     // removed), false otherwise.
     public boolean remove(T element)
     {
+        int index = indexOf(element);
+        if (index != -1)
+        {
+            remove(index);
+            return true;
+        }
         return false;
     }
     
     // Removes all of the elements from this list.
     public void clear()
     {
+        for(int i = 0; i<this.log.length; i++)
+        {
+            this.log[i]=null;
+        }
+        this.size=0;
     }
 
     public void doubleLength()
     {
         int length = log.length;
-        int tempArray = new T[] Object[length*2];
-        for(int i = 0; i<this.log.length(); i++)
+        T[] tempArray = (T[]) new Object[length*2];
+        for(int i = 0; i<this.log.length; i++)
         {
             tempArray[i]=this.log[i];
         }
@@ -168,13 +221,12 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
     }
     public void halfLength()
     {
-        int length = this.log.length()
-        int tempArray = new T[length/2]; 
-        for(int i = 0; i<tempArray.length(); i++)
+        int length = this.log.length;
+        T[] tempArray = (T[]) new Object[length/2];
+        for(int i = 0; i<this.size; i++)
         {
             tempArray[i]=this.log[i];
         }
         this.log=tempArray; 
     }
 }
-*/
