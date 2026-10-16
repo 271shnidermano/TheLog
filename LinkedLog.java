@@ -12,8 +12,10 @@ public class LinkedLog<T> implements EnhancedLogInterface<T>
     private String name;
     private int size;
 
-    public LinkedLog(String name)
+    public LinkedLog(String TheName)
     {
+        name = TheName;
+        size=0;
     }
     
     // returns the name of this StringLog
@@ -25,22 +27,17 @@ public class LinkedLog<T> implements EnhancedLogInterface<T>
     // returns the logical size of this StringLog
     public int size()
     {
-        if(log == null)
-            return -1;
-        int size = 0;
-        LLNode<T> temp = this.log;
-        while(temp.getLink() != null)
-        {
-            size++;
-            temp = temp.getLink();
-        }
-        return size+1;
+        return size;
     }
     
     // returns true if this list contains no elements
     public boolean isEmpty()
     {
-        return log.getInfo() == null;
+        if(log==null)
+        {
+            return true;
+        }
+        return false;
     }
     
     // returns true if this list is completely full
@@ -52,26 +49,35 @@ public class LinkedLog<T> implements EnhancedLogInterface<T>
     // appends the specified element to the end of this list
     public void add(T element)
     {
-        LLNode<T> temp = this.log;
-        while(temp.getLink() != null)
-        {
-            temp = temp.getLink();
+       if(log!=null)
+        { 
+            LLNode<T> temp = log;
+            while(temp.getLink() != null)
+            {
+                temp = temp.getLink();
+            }
+            temp.setLink(new LLNode<T>(element));
+            this.size=size+1;
         }
-        temp.setLink(new LLNode<T>(element));
+        else{
+        log = new LLNode<T> (element);
+        this.size=size+1;
+        }
     }
   
     // returns the element at the specified position in this list
     public T get(int index)
     {
         LLNode<T> temp = this.log;
-        int size = 0;
+        int count = 0;
         while(temp.getLink() != null)
         {
-            if (size == index)
+            if (count == index)
                 return temp.getInfo();
             temp = temp.getLink();
+            count++;
         }
-        return null;
+        return temp.getInfo();
     }
     
     // returns the index of the first occurance of the specified element
@@ -79,21 +85,40 @@ public class LinkedLog<T> implements EnhancedLogInterface<T>
     public int indexOf(T element)
     {
         LLNode<T> temp = this.log;
-        int size = 0;
+        int count = 0;
         while(temp.getLink() != null)
         {
             if (temp.getInfo().equals(element))
-                return size;
+                return count;
             temp = temp.getLink();
-            size++;
+            count++;
         }
+        /*if(temp.getInfo().equals(element))
+        {
+            return count++;
+        }*/
         return -1;
     }
     
     // returns true if this list contains the specified element
     public boolean contains(T element)
     {
-        return false;
+            LLNode<T> temp = this.log;
+            int count = 0;
+            while(temp.getLink() != null)
+            {
+                if (temp.getInfo().equals(element))
+                    return true;
+                temp = temp.getLink();
+                count++;
+            }
+            return false;
+
+    //    if (indexOf(element)==-1)
+    //    {
+    //     return false;
+    //    }
+    //    return true;
     }
     
     // returns a formatted string representation of this StringLog
@@ -152,6 +177,7 @@ public class LinkedLog<T> implements EnhancedLogInterface<T>
             LLNode<T> current = previous.getLink();
             previous.setLink(current.getLink());
         }
+        this.size=size-1;
         return null;
     }
     
