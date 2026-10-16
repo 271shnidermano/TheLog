@@ -66,53 +66,43 @@ public class LinkedLog<T> implements EnhancedLogInterface<T>
     }
   
     // returns the element at the specified position in this list
-    public T get(int index)
+   public T get(int index)
     {
-        LLNode<T> temp = this.log;
+        LLNode<T> temp = log;
         int count = 0;
-        while(temp.getLink() != null)
+
+        while (temp != null)
         {
             if (count == index)
                 return temp.getInfo();
+
             temp = temp.getLink();
             count++;
         }
-        return temp.getInfo();
+        return null;
     }
     
     // returns the index of the first occurance of the specified element
     // in this list, or -1 if this list does not contain the element
     public int indexOf(T element)
     {
-        LLNode<T> temp = this.log;
+        LLNode<T> temp = log;
         int count = 0;
-        while(temp.getLink() != null)
+
+        while (temp != null)
         {
             if (temp.getInfo().equals(element))
                 return count;
+
             temp = temp.getLink();
             count++;
         }
-        /*if(temp.getInfo().equals(element))
-        {
-            return count++;
-        }*/
         return -1;
     }
-    
     // returns true if this list contains the specified element
     public boolean contains(T element)
     {
-            LLNode<T> temp = this.log;
-            int count = 0;
-            while(temp.getLink() != null)
-            {
-                if (temp.getInfo().equals(element))
-                    return true;
-                temp = temp.getLink();
-                count++;
-            }
-            return false;
+        return indexOf(element)!=-1;
 
     //    if (indexOf(element)==-1)
     //    {
@@ -139,11 +129,24 @@ public class LinkedLog<T> implements EnhancedLogInterface<T>
     
     // replaces the element at the specified position in this list
     // with the specified element
-    public T set(int index, T element)
+   public T set(int index, T element)
     {
-        
-        ((LLNode<T>) get(index)).setInfo(element);
-        return element;
+        LLNode<T> temp = log;
+        int count = 0;
+
+        while (temp != null)
+        {
+            if (count == index)
+            {
+                T oldElement = temp.getInfo();
+                temp.setInfo(element);
+                return oldElement;
+            }
+
+            temp = temp.getLink();
+            count++;
+        }
+        return null;
     }
     
     // inserts the specified element at the specified position in this list
@@ -153,6 +156,7 @@ public class LinkedLog<T> implements EnhancedLogInterface<T>
         if (index == 0) {
             inserting.setLink(log);
             log = inserting;
+            size++;
         } else {
             LLNode<T> previous = log;
             for (int i = 0; i < index - 1; i++) {
@@ -160,25 +164,37 @@ public class LinkedLog<T> implements EnhancedLogInterface<T>
             }
             inserting.setLink(previous.getLink());
             previous.setLink(inserting);
+            size++;
         }
     }
     
     // removes the element at the specified position in this list
-    public T remove(int index)
+   public T remove(int index)
     {
-        if (index == 0) {
-            LLNode<T> second = new LLNode<>(get(2));
-            log.setLink(second);
-        } else {
+        if (log == null || index < 0 || index >= size)
+            return null;
+
+        LLNode<T> current = log;
+
+        if (index == 0)
+        {
+            log = log.getLink();
+        }
+        else
+        {
             LLNode<T> previous = log;
-            for (int i = 0; i < index - 1; i++) {
+
+            for (int i = 0; i < index - 1; i++)
+            {
                 previous = previous.getLink();
             }
-            LLNode<T> current = previous.getLink();
+
+            current = previous.getLink();
             previous.setLink(current.getLink());
         }
-        this.size=size-1;
-        return null;
+
+        size--;
+        return current.getInfo();
     }
     
     // removes the first occurance of the specified element from this
@@ -186,18 +202,18 @@ public class LinkedLog<T> implements EnhancedLogInterface<T>
     public boolean remove(T element)
     {
         int index = indexOf(element);
-        if (index != -1) 
-            return false; 
-        else{
-            remove(index);
-            return true;
-        }
 
+        if (index == -1)
+            return false;
+
+        remove(index);
+        return true;
     }
         
     // removes all of the elements from this list
     public void clear()
     {
         log = null;
+        size=0;
     }
 }
